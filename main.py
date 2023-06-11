@@ -5,7 +5,7 @@ import torch
 import os
 
 # Load the pre-trained model
-model_path = './models/Net2DFast_UK_same.pth.tar'  # Replace with your actual model file
+model_path = 'models/Net2DFast_UK_same.pth.tar'
 
 # Check if model file exists
 if not os.path.isfile(model_path):

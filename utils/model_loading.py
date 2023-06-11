@@ -15,6 +15,9 @@ def load_model(model_path):
     # Create an instance of your model
     model = BatCallCNN()  # Replace 'YourModelClass' with the actual class name of your model
 
+    model_state_dict = model.state_dict()
+    torch.save({'model_state_dict': model_state_dict}, model_path)
+
     # Load the checkpoint
     checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
 

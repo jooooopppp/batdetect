@@ -62,7 +62,7 @@ def main():
     transformed_data = torch.from_numpy(spectrogram).unsqueeze(0)
 
     # Load the pre-trained model
-    model_path = 'models/your_model_file.pth'
+    model_path = 'models/Net2DFast_UK_same.pth.tar'
     model = BatCallCNN()
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     model.eval()
