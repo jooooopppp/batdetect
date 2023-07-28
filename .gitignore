@@ -1,2 +1,5 @@
 data/output
 data/raw
+batdetect_env
+__pycache__
+batdetect2
