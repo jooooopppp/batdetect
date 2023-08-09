@@ -72,6 +72,7 @@ def make_prediction(file_name, detection_threshold=DETECTION_THRESHOLD):
     )
 
     results = api.process_file(file_name, config=run_config)
+    print(results)
     detections = results["pred_dict"]["annotation"]
 
     species_probs = {}
@@ -124,7 +125,7 @@ def save_results_image(file_name, image):
     plt.close()
 
 def process_audio_files():
-    raw_folder = "data/raw"
+    raw_folder = "data/raw/F1"
     output_folder = "data/output"
     audio_files = glob.glob(os.path.join(raw_folder, "*.wav"))
 

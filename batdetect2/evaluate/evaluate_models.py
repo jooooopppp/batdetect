@@ -10,7 +10,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import BaggingClassifier
 
 from batdetect2.detector import parameters
 import batdetect2.train.evaluate as evl
@@ -358,7 +358,7 @@ def train_rf_model(x_train, y_train, num_classes, seed=2001):
     y_train = y_train[inds]
     un_train_class = np.unique(y_train)
 
-    clf = RandomForestClassifier(random_state=seed, n_jobs=-1)
+    clf = BaggingClassifier(random_state=seed, n_jobs=-1)
     clf.fit(x_train, y_train)
     y_pred = clf.predict(x_train)
     tr_acc = (y_pred == y_train).mean()

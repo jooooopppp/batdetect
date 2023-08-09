@@ -1,0 +1,50 @@
+import os
+import numpy as np
+from PIL import Image
+from sklearn.ensemble import RandomForestClassifier #RF image
+from sklearn.metrics import classification_report, accuracy_score
+
+# Function to load and preprocess images
+def load_and_preprocess_image(image_path):
+    image = Image.open(image_path)
+    # Preprocess the image if needed (resize, normalization, etc.)
+    return np.array(image)
+
+# Path to the directory containing your spectrogram image files
+image_directory = "/Users/josna/Documents/GitHub/batdetect/data/output"
+
+# List all image files in the directory
+image_files = [file for file in os.listdir(image_directory) if file.endswith(".png")]  # Update extension as needed
+
+# Load your trained RandomForest model
+random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
+# Load the trained model weights or use your existing model
+
+# Load and preprocess all images
+X = [load_and_preprocess_image(os.path.join(image_directory, file)) for file in image_files]
+X = np.array(X)
+
+# Placeholder labels (since you don't have actual labels)
+y = np.zeros(len(X))  # You can adjust this placeholder label as needed
+
+# Fit the model with all images (as there are no actual labels)
+random_forest.fit(X, y)
+
+# Batch size for processing images
+batch_size = 32
+
+# Iterate over images in batches
+for batch_start in range(0, len(image_files), batch_size):
+    batch_end = min(batch_start + batch_size, len(image_files))
+    batch_image_files = image_files[batch_start:batch_end]
+
+    # Load and preprocess batch of images
+    batch_X = [load_and_preprocess_image(os.path.join(image_directory, file)) for file in batch_image_files]
+    batch_X = np.array(batch_X)
+
+    # Make predictions on the batch of images
+    batch_y_pred = random_forest.predict(batch_X)
+
+    # Print the predicted labels (assuming you have a label mapping)
+    batch_predicted_species = [your_species_mapping[index] for index in batch_y_pred]
+    print("Predicted Species (Batch):", batch_predicted_species)
