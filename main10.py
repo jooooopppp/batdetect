@@ -8,7 +8,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Path to the directory containing your image subfolders
 base_directory = "/Users/josna/Documents/GitHub/batdetect/data/output"  # Update this path
-class_names = ["B", "C"]
+class_names = ["B", "C", "D", "E", "F", "SMU" ]
 
 # Load and preprocess images
 X = []
