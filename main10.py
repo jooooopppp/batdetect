@@ -1,14 +1,16 @@
 import os
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+
 # Path to the directory containing your image subfolders
 base_directory = "/Users/josna/Documents/GitHub/batdetect/data/output"  # Update this path
-class_names = ["B", "C", "D", "E" ]
+class_names = ["B", "C", "D"]
 
 # Load and preprocess images
 X = []
@@ -69,8 +71,26 @@ datagen = ImageDataGenerator(
 # Train the model using generators
 batch_size = 32
 epochs = 10
-model.fit(datagen.flow(X_train, y_train, batch_size=batch_size), epochs=epochs, validation_data=(X_test, y_test))
+
+# Train the model using generators and get history
+history = model.fit(datagen.flow(X_train, y_train, batch_size=batch_size), epochs=epochs, validation_data=(X_test, y_test))
+
+# Plot training accuracy and validation accuracy over epochs
+plt.plot(history.history['accuracy'], label='accuracy')
+plt.plot(history.history['val_accuracy'], label='val_accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.ylim([0.5, 1])
+plt.legend(loc='lower right')
 
 # Evaluate the model
-test_loss, test_acc = model.evaluate(X_test, y_test)
+test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
 print("Test Accuracy:", test_acc)
+
+# Show the plot
+plt.show()
+
+
+
+
+

@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import torch  # Import the torch module
 from batdetect2 import api
 from batdetect2 import plot
 import glob
@@ -47,9 +48,18 @@ def calculate_mean_frequency(spec):
 def calculate_min_frequency(spec):
     spec_np = spec.cpu().numpy()
 
+    if spec_np.size == 0:
+        return None  # or an appropriate default value
+
     threshold = np.max(spec_np) * 0.1
-    min_frequency = np.min(np.where(spec_np > threshold)[0])
+    non_empty_indices = np.where(spec_np > threshold)[0]
+
+    if non_empty_indices.size == 0:
+        return None  # or an appropriate default value
+
+    min_frequency = np.min(non_empty_indices)
     return min_frequency
+
 
 def calculate_max_frequency(spec):
     spec_np = spec.cpu().numpy()
@@ -64,6 +74,18 @@ def calculate_peak_intensity(spec):
     peak_intensity = np.max(spec_np)
     return peak_intensity
 
+
+
+def apply_denoising(spec):
+    spec_np = spec.cpu().numpy()
+
+    # Apply denoising method (remove mean amplitude in each frequency band)
+    denoised_spec_np = spec_np - np.mean(spec_np, axis=1, keepdims=True)
+
+    # Convert back to tensor
+    denoised_spec = torch.tensor(denoised_spec_np)
+
+    return denoised_spec
 
 def make_prediction(file_name, detection_threshold=DETECTION_THRESHOLD):
     run_config = api.get_config(
@@ -86,6 +108,7 @@ def make_prediction(file_name, detection_threshold=DETECTION_THRESHOLD):
             species_probs[species] = detection_prob
 
     im, spec = generate_results_image(file_name, detections, run_config)
+    denoised_spec = apply_denoising(spec)  # Apply denoising
     df = pd.DataFrame(
         [
             {
@@ -93,13 +116,13 @@ def make_prediction(file_name, detection_threshold=DETECTION_THRESHOLD):
                 "time": pred["start_time"],
                 "species": species,
                 "detection_prob": detection_prob,
-                "mean_frequency": calculate_mean_frequency(spec),
+                "mean_frequency": calculate_mean_frequency(denoised_spec),  # Use denoised_spec here
                 "start_time": pred["start_time"],
                 "end_time": pred["end_time"],
-                "min_frequency": calculate_min_frequency(spec),
-                "max_frequency": calculate_max_frequency(spec),
+                "min_frequency": calculate_min_frequency(denoised_spec),  # Use denoised_spec here
+                "max_frequency": calculate_max_frequency(denoised_spec),  # Use denoised_spec here
                 "sampling_rate": run_config["target_samp_rate"],
-                "peak_intensity": calculate_peak_intensity(spec),
+                "peak_intensity": calculate_peak_intensity(denoised_spec),  # Use denoised_spec here
             }
             for species, detection_prob in species_probs.items()
         ]
@@ -125,7 +148,7 @@ def save_results_image(file_name, image):
     plt.close()
 
 def process_audio_files():
-    raw_folder = "data/raw/F1"
+    raw_folder = "data/raw/B"
     output_folder = "data/output"
     audio_files = glob.glob(os.path.join(raw_folder, "*.wav"))
 
