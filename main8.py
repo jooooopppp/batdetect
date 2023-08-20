@@ -13,7 +13,7 @@ import librosa
 base_directory = "/Users/josna/Documents/GitHub/batdetect/data/raw"  # Update this path
 
 # List of class names (subdirectory names)
-class_names = ["B", "C", "D" ]
+class_names = ["B", "C", "D,", "D1", "E", "E1", "F", "F1", "SMU" ]
 
 # Load and preprocess audio data 
 X = []
